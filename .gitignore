@@ -1,0 +1,9 @@
+node_modules/
+
+# apple files
+.DS_Store
+*.DS_Store
+
+# env files
+.env
+.dotenv/

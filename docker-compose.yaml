@@ -1,0 +1,22 @@
+services:
+  algos:
+    platform: linux/amd64
+    container_name: am-32-algos
+    build: .
+    ports:
+      - "3002:3002"
+    environment:
+      - TZ=America/New_York
+      - VIRTUAL_ENV=/app/venv
+      - npm_config_build_from_source=true
+      - npm_config_arch=x64
+      - npm_config_platform=linux
+    volumes:
+      - C:\Users\default.DESKTOP-1N8KV94\OneDrive\Renewal\Coding\dockerVolumes\dotenv\AM_3_2_Algos:/app/.dotenv
+      - C:\Users\default.DESKTOP-1N8KV94\OneDrive\Renewal\Coding\dockerVolumes\db:/app/database
+    networks:
+      - my-shared-network
+
+networks:
+  my-shared-network:
+    external: true

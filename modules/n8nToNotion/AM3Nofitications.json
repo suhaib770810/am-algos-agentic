@@ -1,0 +1,309 @@
+{
+  "name": "AM3Nofitications",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "AM3_recs_webhook",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -480,
+        -368
+      ],
+      "id": "a4e9a008-7c43-4ec3-bf0f-e280d13be5a0",
+      "name": "Webhook",
+      "webhookId": "12066225-36a4-4a15-956c-c6bf302e2c30"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "278ff776-ad42-80f3-8459-ee4b776c3c3e",
+          "mode": "list",
+          "cachedResultName": "AM3 Notifications Database",
+          "cachedResultUrl": "https://www.notion.so/278ff776ad4280f38459ee4b776c3c3e"
+        },
+        "title": "={{\n  (()=>{\n    let today = new Date()\n    return today.toLocaleDateString('en-US')\n  })()\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -288,
+        -592
+      ],
+      "id": "c732cd5d-b774-4bff-a5f4-467995274957",
+      "name": "Create a database page",
+      "credentials": {
+        "notionApi": {
+          "id": "GyRnbOFNupIztDr9",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst newItems = Object.entries($input.first().json.body.fixedAllocRecommendations).map(([key, value]) => ({\n  key: key,\n  value: value\n}));\nreturn newItems;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        64,
+        -256
+      ],
+      "id": "dbd4f55b-76df-4b56-ae2a-ec70e1a4ba96",
+      "name": "Convert to Array"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        288,
+        -256
+      ],
+      "id": "c003fa73-e627-4c71-8bd7-23a9f666ebc4",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "resource": "block",
+        "blockId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "blockUi": {
+          "blockValues": [
+            {
+              "type": "heading_1",
+              "textContent": "={{ $json.value.description }}"
+            },
+            {
+              "type": "heading_3",
+              "textContent": "=Current Recommendations"
+            },
+            {
+              "textContent": "={{ (   () => {     \n    let text = \"\";     \n    let currentRecs = $json.value.currentRecommendation;     \n    let recMetrics = Object.keys(currentRecs);     recMetrics.forEach(metric => {       \n      let line = metric + ': ' + currentRecs[metric] + '\\n'       \n      text = text + line     \n    })\nreturn text })() }}"
+            },
+            {
+              "type": "heading_3",
+              "textContent": "Next Recommendations"
+            },
+            {
+              "textContent": "={{ (   () => {          \n    let text = \"\";          \n    let currentRecs = $json.value.nextRecommendation;          \n    let recMetrics = Object.keys(currentRecs);     \n    recMetrics.forEach(metric => {             \n      let line = metric + ': ' + currentRecs[metric] + '\\n'              \n      text = text + line          \n    }) \nreturn text })() }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        496,
+        -256
+      ],
+      "id": "82bed1e0-28b1-4899-8886-4d905ae6a74f",
+      "name": "Append a block",
+      "credentials": {
+        "notionApi": {
+          "id": "GyRnbOFNupIztDr9",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        688,
+        -608
+      ],
+      "id": "d037874d-4883-4e4a-95c4-ffb87dcb69a6",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [$input.first().json.body.pnlData ]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        352,
+        -512
+      ],
+      "id": "68441003-ab8d-4d50-93c4-03bfbf99c235",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "resource": "block",
+        "blockId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "blockUi": {
+          "blockValues": [
+            {
+              "type": "heading_2",
+              "textContent": "PNL Data"
+            },
+            {
+              "type": "heading_3",
+              "textContent": "Position PNL"
+            },
+            {
+              "textContent": "={{ \n(()=> {\n  let text = \"\"\n  let entries = Object.entries($json.positionsPNL)\n  entries.forEach(([key,value]) => {\n    let line = key + \": \" + value + \"\\n\"\n    text += line\n  })\n  return text\n})()\n}}"
+            },
+            {
+              "type": "heading_3",
+              "textContent": "Symbol PNL"
+            },
+            {
+              "textContent": "={{ \n(()=> {\n  let text = \"\"\n  let entries = Object.entries($json.symbolsPNL)\n  entries.forEach(([key,value]) => {\n    let line = key + \": \" + value + \"\\n\"\n    text += line\n  })\n  return text\n})()\n}}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        848,
+        -592
+      ],
+      "id": "15af2556-9b70-40c5-85ac-ad10dc0b00ea",
+      "name": "Append a block1",
+      "credentials": {
+        "notionApi": {
+          "id": "GyRnbOFNupIztDr9",
+          "name": "Notion account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Create a database page",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Convert to Array",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a database page": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to Array": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Append a block",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append a block": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Append a block1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append a block1": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "386659e0-3b96-422e-b4a4-ee3df9c35e6a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0558aa96571e7ba9f21de5dc2c5e65ddd37b9f1c328b8bff5d2b4f43be5a3c2c"
+  },
+  "id": "pAl8jeKZ52jWRvKv",
+  "tags": []
+}
