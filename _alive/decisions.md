@@ -72,6 +72,20 @@ The system follows a **Modular Analysis Engine** pattern. It is designed to be a
 
 ---
 
+## Pending Design Decisions
+
+Items that are open and need a design resolution before building. Updated as discussions evolve.
+
+| # | Item | Repo(s) | Priority | Status |
+|---|------|---------|----------|--------|
+| 1 | **SQL Injection** — Replace template-literal SQL in `lifo-match.js` and `dbQueries.js` with parameterized queries | both | Critical | Pending |
+| 2 | **Floating-Point Precision** — JS `Number` type is unsafe for financial math (P&L, cost basis, commissions). Risk is silent rounding errors that compound over time. Need to decide on `Decimal.js` or cents-based integer math | algos | High | Pending |
+| 3 | **Unit Tests** — No automated test coverage for LIFO matching, price range, or allocation logic. Refactoring is currently unsafe without manual sandbox runs | both | High | Pending |
+| 4 | **Options Pricing Module** — Build a Black-Scholes based Greeks computation module (delta, theta, IV) in Layer 2. User has Excel models as the seed. Decision: module interface schema, which Greeks to compute, how IV is sourced (from market data or implied from price) | algos | High | Pending |
+| 5 | **Concrete Recommendations** — Current output is signals (Buy/Hold/Sell). Target is actionable recs: "Buy 3 contracts ABC Jan 2027 $200C below $xx.yy", "Roll ABC Mar→Jun". Near-term patch: add price targets to existing output. Long-term: full contract-level recommendations | algos | High | Pending |
+
+---
+
 ## Proposed Technical Improvements
 
 1. **Security & Stability**:
